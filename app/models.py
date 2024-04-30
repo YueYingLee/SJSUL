@@ -11,7 +11,9 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
-    role = db.Column(db.String(128), nullable = False)
+    role = db.Column(db.String, nullable=False, default='guest')
+    registered_role = db.Column(db.String, nullable=False)
+    approved = db.Column(db.Boolean, nullable=False, default=False)  # Approval status for admin
     #roles = db.relationship('Role',  backref='user', lazy = 'dynamic')
     #roles = db.relationship('Role', secondary=roles_users, backref='roled')
     #roles = db.relationship('Role', secondary='user_roles', backref='users')
