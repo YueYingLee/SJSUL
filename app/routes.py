@@ -8,7 +8,7 @@ from flask_login import logout_user
 from flask_login import login_required
 
 from datetime import datetime
-from app.models import User, Role, Profile, Books, user_roles
+from app.models import User, Profile, Books #, Role, user_roles
 from app.forms import LoginForm, registerUser
 
 from sqlalchemy import desc
@@ -21,27 +21,14 @@ def register():
         if registerForm.validate_on_submit():
           same_Username = User.query.filter_by(username = registerForm.username.data).first()
           if same_Username == None:
-            user = User(username= registerForm.username.data)
+            user = User(username= registerForm.username.data, role = registerForm.role.data)
             user.set_password(registerForm.password.data) 
             db.session.add(user)
             db.session.commit()
-            selected_role = registerForm.role.data
-            print(f"Selected role: {selected_role}")
-            role = Role.query.filter_by(name=selected_role).first()
-            if role:
-              print(f"Role found: {role}")
-              user_role = user_roles(user_id=user.id, role_id=role.id)
-            else:
-              print("Role not found")
-           
-            db.session.add(user_role)
-            db.session.commit()
-            flash('Sucessful registration')
-            #return redirect('/login')
+            flash('Successful registration!')
           else :
              flash('The username is not available. Please choose another username.')
         return render_template('register.html', registerForm=registerForm)
-
 
 
 @myapp_obj.route("/login", methods=['GET', 'POST'])

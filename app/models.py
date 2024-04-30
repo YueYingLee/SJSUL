@@ -11,10 +11,10 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
-    #role = db.Column(db.String(128), nullable = False)
+    role = db.Column(db.String(128), nullable = False)
     #roles = db.relationship('Role',  backref='user', lazy = 'dynamic')
     #roles = db.relationship('Role', secondary=roles_users, backref='roled')
-    roles = db.relationship('Role', secondary='user_roles', backref='users')
+    #roles = db.relationship('Role', secondary='user_roles', backref='users')
     profile = db.relationship('Profile', backref = 'user', lazy = 'dynamic')   
 
     def set_password(self, password):
@@ -30,7 +30,7 @@ class User(db.Model, UserMixin):
     def __repr__(self): #for debugging process
         return f'<user {self.id}: {self.username}>'
     
-#class Role(db.Model, RoleMixin):
+'''#class Role(db.Model, RoleMixin):
 class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True) #This represents the name of role 
@@ -39,6 +39,7 @@ user_roles = db.Table('user_roles',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
     db.Column('role_id', db.Integer, db.ForeignKey('role.id'), primary_key=True)
 )
+'''
 
 
 '''class UserRoles (db.Model):
