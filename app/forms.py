@@ -26,3 +26,6 @@ class loginUser(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
+
+class deleteUser(FlaskForm): #maybe this function is not needed later 
+    submit = SubmitField('Delete')

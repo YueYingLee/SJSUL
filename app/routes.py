@@ -95,3 +95,34 @@ def approve_user(user_id):
             flash("User not found or already approved!")
     # Redirect back to the admin dashboard
     return redirect(url_for("adminHome"))
+
+
+@myapp_obj.route("/delete_user/<int:user_id>", methods=["POST"])
+def delete_user(user_id):
+    if request.method == "POST":
+        if current_user.role == 'Admin':
+          user = User.query.get(user_id)
+          if user:
+            user.approved = True
+            db.session.delete(user)
+            db.session.commit()
+            flash("User deleted successfully!")
+          else:
+            flash("User not found!")
+        else:
+             flash('You do not have permission to delete users.')
+    return redirect(url_for("adminHome"))
+
+
+@myapp_obj.route("/reject_user/<int:user_id>", methods=["POST"])
+def reject_user(user_id):
+    if request.method == "POST":
+        if current_user.role == 'Admin':
+          user = User.query.get(user_id)
+          if user and user.approved == False:
+            db.session.delete(user)
+            db.session.commit()
+            flash("User rejected successfully!")
+        else:
+            flash("User not found or already rejected!")
+    return redirect(url_for("adminHome"))

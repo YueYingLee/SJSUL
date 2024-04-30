@@ -56,12 +56,25 @@
                     <td>{{ user.role }}</td>
                     <td>{{ user.registered_role }}</td>
                     <td>{{ "Yes" if user.approved else "No" }}</td>
-                    <td>
+                    <td> 
+                        <!-- Approving actions-->
                         {% if user.role != "Admin" and user.approved == False %}
                         <form action="{{ url_for('approve_user', user_id=user.id) }}" method="POST" style="display: inline;">
                             <button type="submit">Approve</button>
                         </form>
                         {% endif%}
+
+                        <!-- Rejecting actions-->
+                        {% if user.role != "Admin" and user.approved == False %}
+                        <form action="{{ url_for('reject_user', user_id=user.id) }}" method="POST" style="display: inline;">
+                            <button type="submit">Reject</button>
+                        </form>
+                        {% endif%}
+
+                        <!--After approval, admin can choose delete user -->
+                        <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST" style="display: inline;">
+                            <button type="submit">Delete</button>
+                        </form>
                     </td>
                 </tr>
                 {% endfor %}
