@@ -44,10 +44,16 @@ def login():
               if valid_user.role == 'Admin':
                   return redirect(url_for('adminHome'))  # redirect to admin homepage
               
+              if valid_user.role == 'Libranian':
+                  return redirect(url_for('adminHome'))  # redirect to libranian homepage
+              
               elif valid_user.role == 'Student':
                   return redirect(url_for('generalHome'))  # redirect to general homepage
               
               elif valid_user.role == 'Faculty':
+                  return redirect(url_for('generalHome'))  # redirect to general homepage
+              
+              elif valid_user.role == 'Public':
                   return redirect(url_for('generalHome'))  # redirect to general homepage
               
             else :
@@ -125,4 +131,27 @@ def reject_user(user_id):
             flash("User rejected successfully!")
         else:
             flash("User not found or already rejected!")
+    return redirect(url_for("adminHome"))
+
+
+@myapp_obj.route("/change_user_role/<int:user_id>", methods=["GET", "POST"])
+def change_user_role(user_id):
+    if request.method == "POST":
+        if current_user.role == 'Admin':
+          user = User.query.get(user_id)
+          if user:
+            new_role = request.form.get("new_role")
+            if new_role:
+              if new_role != user.role:
+                  user.role = new_role
+                  db.session.commit()
+                  flash("User role updated successfully!")
+              else:
+                 flash("New role is the same as the current role")
+            else:
+               flash ('No new roles are provided')
+          else:
+            flash("User not found")
+        else:
+          flash('You do not have permission to change roles.')
     return redirect(url_for("adminHome"))
