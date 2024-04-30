@@ -41,7 +41,15 @@ def login():
           if valid_user.check_password(loginForm.password.data)== True:
             if valid_user.approved:
               login_user(valid_user)
-              return redirect(url_for('homepage'))
+              if valid_user.role == 'Admin':
+                  return redirect(url_for('adminHome'))  # redirect to admin homepage
+              
+              elif valid_user.role == 'Student':
+                  return redirect(url_for('generalHome'))  # redirect to general homepage
+              
+              elif valid_user.role == 'Faculty':
+                  return redirect(url_for('generalHome'))  # redirect to general homepage
+              
             else :
                 flash('Your account need to be approved by admin before accessing')
           else :
@@ -57,10 +65,33 @@ def logout():
        logout_user()
        return redirect(url_for('login'))
 
-@myapp_obj.route("/homepage")
+@myapp_obj.route("/generalHome")
 @login_required
-def homepage():
+def generalHome():
     user = current_user
-    user_fullname = user.fullname
-    return render_template('homepage.html', user_fullname = user_fullname)
+    username = user.username
+    users = User.query.all()
+    return render_template('generalHome.html', username = username, users = users)
 
+@myapp_obj.route("/adminHome")
+
+@login_required
+def adminHome():
+    user = current_user
+    username = user.username
+    users = User.query.all()
+    return render_template('adminHome.html', username = username, users = users)
+
+@myapp_obj.route("/approve_user/<int:user_id>", methods=["POST"])
+def approve_user(user_id):
+    if request.method == "POST":
+        user = User.query.get(user_id)
+        if user and user.approved == False:
+            user.approved = True
+            user.role = user.registered_role
+            db.session.commit()
+            flash("User approved successfully!")
+        else:
+            flash("User not found or already approved!")
+    # Redirect back to the admin dashboard
+    return redirect(url_for("adminHome"))
