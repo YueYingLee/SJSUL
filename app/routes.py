@@ -8,7 +8,7 @@ from flask_login import logout_user
 from flask_login import login_required
 
 from datetime import datetime
-from app.models import User, Role, Book, Profile 
+from app.models import User
 from app.forms import LoginForm, registerUser
 
 from sqlalchemy import desc
