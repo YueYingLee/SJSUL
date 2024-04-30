@@ -93,6 +93,61 @@
                 </tr>
                 {% endfor %}
             </tbody>
+        </table> 
+
+        <h2>Books Table</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Current Role</th>
+                    <th>Registered Role</th>
+                    <th>Approved</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.role }}</td>
+                    <td>{{ user.registered_role }}</td>
+                    <td>{{ "Yes" if user.approved else "No" }}</td>
+                    <td> 
+                        <!-- Approving actions-->
+                        {% if user.role != "Admin" and user.approved == False %}
+                        <form action="{{ url_for('approve_user', user_id=user.id) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="submit-button" >Approve</button>
+                        </form>
+                        <!-- Rejecting actions-->
+                        <form action="{{ url_for('reject_user', user_id=user.id) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="submit-button" >Reject</button>
+                        </form>
+                        {% endif%}
+                        {% if user.role != "Admin" and user.approved == True %}
+                          <!-- After approval, admin can also choose to change the user role --> 
+                          <form action="{{ url_for('change_user_role', user_id=user.id) }}" method="POST" style="display: inline;">
+                            <select name="new_role">
+                                <option value="Admin">Admin</option>
+                                <option value="Librarian">Librarian</option>
+                                <option value="Faculty">Faculty</option>
+                                <option value="Student">Student</option>
+                                <option value="Public">Public</option>
+                            </select>
+                            <button type="submit">Change Role</button>
+                        </form>  
+                        <!--After approval, admin can choose to delete user -->
+                        <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                            <button type="submit">Delete</button>
+                        </form>
+                        <br> <br> 
+                        {% endif%}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
     </div>
 </body>
