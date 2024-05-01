@@ -245,6 +245,25 @@ def borrow_book(books_id):
     return redirect(url_for("view_book"))
 
 
+@myapp_obj.route("/return_book/<int:books_id>", methods=["POST"])
+@login_required
+def return_book(books_id):
+    if request.method == "POST":
+        if current_user.role == 'Student':
+            book = Books.query.get(books_id)
+            if book:
+                    borrow_history = BorrowHistory.query.filter_by(user_id=current_user.id, book_id=book.id).first()
+                    borrow_history.return_date = datetime.now()  # Set the return date
+                    book.count = book.count + 1
+                    db.session.commit()
+                    flash("You returned book successfully!")   
+            else: #no book found in the book table
+                flash("Book not found to return!")
+        else:
+                flash('You do not have permission to return books.')
+    return redirect(url_for("view_book")) 
+
+
 
 
         

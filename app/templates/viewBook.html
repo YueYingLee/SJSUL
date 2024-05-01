@@ -87,7 +87,7 @@
            
         {% endif %}
 
-        <h2>Your borrow History</h2>
+        <h2>Your Borrow History</h2>
         {%if borrowHistory %} <!--display borrow book history if there are any-->
         <table>
             <thead>
@@ -95,20 +95,27 @@
                     <th>ID</th>
                     <th>Borrowed Book id</th>
                     <th>Borrowed Date</th>
+                    <th> Returned Date</th>
                     <th>Actions</th>
                     
                 </tr>
             </thead>
             <tbody>
                     {% for borrowed in borrowHistory %}
+                    {% for book in books %}
                     <tr>
                         <td>{{ borrowed.id }}</td>
                         <td>{{ borrowed.book_id }}</td>
                         <td>{{ borrowed.borrow_date.strftime("%b %d, %Y %H:%M:%S") }}</td>
+                        <td> </td>
                         <td> 
-                        Return book?
+                            <!-- Student can choose to return book-->
+                            <form action="{{ url_for('return_book', books_id=book.id) }}" method="POST" style="display: inline;">
+                                <button type="submit">Return Book</button>
+                            </form>
                         </td>
                     </tr>
+                    {% endfor %}
                 {% endfor %}
             </tbody>
         </table>
