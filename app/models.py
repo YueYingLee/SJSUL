@@ -49,9 +49,6 @@ class BorrowHistory(db.Model):
     borrow_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     return_date = db.Column(db.DateTime)
 
-    #user = db.relationship('User', backref=db.backref('borrow_history', lazy=True))
-    #book = db.relationship('Books', backref=db.backref('borrow_history', lazy=True))
-
 class Profile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     role = db.Column(db.String(200))

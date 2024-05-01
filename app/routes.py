@@ -175,7 +175,6 @@ def manage_books():
     return render_template('manageBooks.html', username = username, books=books)
 
 
-
 @myapp_obj.route("/delete_book/<int:books_id>", methods=["POST"])
 @login_required
 def delete_book(books_id):
@@ -211,5 +210,41 @@ def add_book():
         else :
             flash('You do not have permission to add book')
     return render_template('addBooks.html', addBookForm= addBookForm)
+
+
+#Funciton to view book for users such as Student,Faculty
+@myapp_obj.route("/view_book", methods = ['GET', 'POST'])
+@login_required
+def view_book():        
+    books = Books.query.filter(Books.count > 0).all()
+    borrowHistory = BorrowHistory.query.filter(BorrowHistory.user_id==current_user.id).all()
+    user = current_user
+    username = user.username      
+    return render_template('viewBook.html', username = username, books=books, borrowHistory = borrowHistory)
+     
+
+@myapp_obj.route("/borrow_book/<int:books_id>", methods=["POST"])
+@login_required
+def borrow_book(books_id):
+    if request.method == "POST":
+        if current_user.role == 'Student':
+            book = Books.query.get(books_id)
+            if book:
+                if book.count > 0:
+                    new_borrow = BorrowHistory(user_id=current_user.id, book_id=book.id, borrow_date = datetime.now())
+                    db.session.add(new_borrow)                    
+                    book.count = book.count -1
+                    db.session.commit()
+                    flash("Book borrowed successfully!")
+                else:
+                    flash("All copies of this book are currently borrowed.")
+            else:
+                flash("Book not found.")
+        else:
+            flash("Only students can borrow books.")
+    return redirect(url_for("view_book"))
+
+
+
 
         

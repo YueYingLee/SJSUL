@@ -3,10 +3,10 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField, Selec
 from wtforms.validators import DataRequired, Length, EqualTo
 
 class registerUser(FlaskForm):
- username = StringField('Username',validators =[DataRequired(), Length (min = 4, max = 15)], render_kw ={"placeholder":"Example: student1"})
- password = PasswordField('New password', validators = [DataRequired(), Length (min=4, max =10), EqualTo('confirm',message='password does not match')])
- confirm = PasswordField ('Confirm password', validators = [DataRequired(), EqualTo('confirm',message='password does not match')])
- role = SelectField(
+    username = StringField('Username',validators =[DataRequired(), Length (min = 4, max = 15)], render_kw ={"placeholder":"Example: student1"})
+    password = PasswordField('New password', validators = [DataRequired(), Length (min=4, max =10), EqualTo('confirm',message='password does not match')])
+    confirm = PasswordField ('Confirm password', validators = [DataRequired(), EqualTo('confirm',message='password does not match')])
+    role = SelectField(
         'Role',
         validators=[DataRequired()],
         choices=[
@@ -17,7 +17,7 @@ class registerUser(FlaskForm):
             ('Public', 'Public')
         ]
     )
- submit = SubmitField ("Register")
+    submit = SubmitField ("Register")
 
 class loginUser(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -26,8 +26,10 @@ class loginUser(FlaskForm):
     submit = SubmitField('Sign In')
 
 class addBook(FlaskForm): 
- title = StringField('Title of Book',validators =[DataRequired(), Length (min = 4, max = 500)])
- author = StringField('Author(s)of Book',validators =[DataRequired(), Length (min = 4, max = 500)])
- genre = StringField('Genre(s) of Book',validators =[DataRequired(), Length (min = 4, max = 500)])
- count = IntegerField('Copies of Book',validators =[DataRequired()])
- submit = SubmitField ("Add")
+    title = StringField('Title of Book',validators =[DataRequired(), Length (min = 4, max = 500)])
+    author = StringField('Author(s)of Book',validators =[DataRequired(), Length (min = 4, max = 500)])
+    genre = StringField('Genre(s) of Book',validators =[DataRequired(), Length (min = 4, max = 500)])
+    count = IntegerField('Copies of Book',validators =[DataRequired()])
+    submit = SubmitField ("Add")
+
+
