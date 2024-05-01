@@ -8,7 +8,7 @@ from flask_login import logout_user
 from flask_login import login_required
 
 from datetime import datetime
-from app.models import User, Profile, Books #, Role, user_roles
+from app.models import User, Books, BorrowHistory, Profile
 from app.forms import loginUser, registerUser
 
 from sqlalchemy import desc
@@ -44,8 +44,8 @@ def login():
               if valid_user.role == 'Admin':
                   return redirect(url_for('adminHome'))  # redirect to admin homepage
               
-              if valid_user.role == 'Libranian':
-                  return redirect(url_for('adminHome'))  # redirect to libranian homepage
+              elif valid_user.role == 'Librarian':
+                  return redirect(url_for('librarianHome'))  # redirect to libranian homepage
               
               elif valid_user.role == 'Student':
                   return redirect(url_for('generalHome'))  # redirect to general homepage
@@ -79,8 +79,16 @@ def generalHome():
     users = User.query.all()
     return render_template('generalHome.html', username = username, users = users)
 
-@myapp_obj.route("/adminHome")
+@myapp_obj.route("/librarianHome")
+@login_required
+def librarianHome():
+    user = current_user
+    username = user.username
+    users = User.query.all()
+    books = Books.query.all()
+    return render_template('librarianHome.html', username = username, users = users, books = books)
 
+@myapp_obj.route("/adminHome")
 @login_required
 def adminHome():
     user = current_user
@@ -155,3 +163,10 @@ def change_user_role(user_id):
         else:
           flash('You do not have permission to change roles.')
     return redirect(url_for("adminHome"))
+
+'''@myapp_obj.route("/view_books", methods = ['GET', 'POST'])
+@login_required
+def view_books():
+    books = Books.query.filter_by(recipient_id = current_user.id).all()
+    return render_template('view_books.html', user=current_user, emails = emails)''
+    '''
