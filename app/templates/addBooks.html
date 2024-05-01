@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>This is librarian Tables</title>
+    <title>Add Books Page</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,80 +11,106 @@
             color: #000000;
         }
         .container {
-            max-width: 800px;
+            max-width: 600px;
             margin: 50px auto;
             padding: 20px;
             border: 1px solid #cccccc;
             border-radius: 10px;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+        .form-group {
+            margin-bottom: 20px;
         }
-        th, td {
-            padding: 8px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
+        .form-control {
+            width: 90%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
         }
-        th {
-            background-color: #f2f2f2;
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
         }
-
-        .submit-button {
-        margin-right: 10px;
-    }        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #ffffff;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .error {
+            color: #ff0000;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <a class="btn btn-dark p-2" href="/logout">Logout</a>
-        <a class="btn btn-dark p-2" href="/logout">Logout</a>
-        <h1>Hello {{username}}!</h1>
-        <h1>This is manageBooks html!</h1>
-        
-        <h2>Books Table</h2>
-        {%if books %} <!--display books informatin if there are books-->
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Book Title</th>
-                    <th>Book Author</th>
-                    <th>Book Genre</th>
-                    <th>Availability</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                    {% for book in books %}
-                    <tr>
-                        <td>{{ book.id }}</td>
-                        <td>{{ book.title }}</td>
-                        <td>{{ book.author }}</td>
-                        <td>{{ book.genre }}</td>
-                        <td>{{ book.count}}</td>
-                        <td> 
-                            <!-- Librarian can choose to delete copies of book-->
-                            <form action="{{ url_for('delete_book', books_id=book.id) }}" method="POST" style="display: inline;">
-                                <button type="submit">Delete book</button>
-                            </form>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %} 
-        <table>
-            <thead>
-                <tr>
-                   
-                </tr>
-            </thead>
-            <tbody> 
-                <h2>No books available.</h2></tr>
-           
+    {% block content %} 
+    <div class="container d-flex align-items-center justify-content-center">
+      <div class="addBook-form-wrapper">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert alert-danger">
+          <ul class="list-unstyled">
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+          </ul>
+        </div>
         {% endif %}
+        {% endwith %}
+          <h1 class="text-center text-primary mb-4">Add Books Page</h1>
+          <form action="" method="POST" novalidate class="addBook-form">
+            {{ addBookForm.hidden_tag() }}
+            <div class="form-group">
+              <label for="title" class="form-label">Title</label>
+              {{ addBookForm.title(size=32, id="title", class="form-control rounded-pill") }}
+              {% for error in addBookForm.title.errors %}
+              <span class="text-danger">[{{ error }}]</span>
+              {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="author" class="form-label">Author</label>
+                {{ addBookForm.author(size=32, id="author", class="form-control rounded-pill") }}
+                {% for error in addBookForm.author.errors %}
+                <span class="text-danger">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="genre" class="form-label">Genre</label>
+                {{ addBookForm.genre(size=32, id="genre", class="form-control rounded-pill") }}
+                {% for error in addBookForm.genre.errors %}
+                <span class="text-danger">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="Count" class="form-label">Count</label>
+                {{ addBookForm.count(size=32, id="count", class="form-control rounded-pill") }}
+                {% for error in addBookForm.count.errors %}
+                <span class="text-danger">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+
+            
+            <div class="form-group">
+              {{ addBookForm.submit(class="btn btn-primary rounded-pill") }}
+              <a href="/manage_books" class="btn btn-info" role="button">Manage Book</a>
+            </div>
+          </form>         
+          </div>
+          <br />
+          <!--<div class="text-center mt-4"> 
+            <a href="/" class="btn btn-info" role="button">Back</a>
+            </div> -->
+        </div>
     </div>
+{% endblock %}
 </body>
 </html>

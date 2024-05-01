@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, IntegerField
 from wtforms.validators import DataRequired, Length, EqualTo
 
 class registerUser(FlaskForm):
@@ -25,5 +25,9 @@ class loginUser(FlaskForm):
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
 
-class deleteUser(FlaskForm): #maybe this class is not needed later 
-    submit = SubmitField('Delete')
+class addBook(FlaskForm): 
+ title = StringField('Title of Book',validators =[DataRequired(), Length (min = 4, max = 500)])
+ author = StringField('Author(s)of Book',validators =[DataRequired(), Length (min = 4, max = 500)])
+ genre = StringField('Genre(s) of Book',validators =[DataRequired(), Length (min = 4, max = 500)])
+ count = IntegerField('Copies of Book',validators =[DataRequired()])
+ submit = SubmitField ("Add")

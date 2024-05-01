@@ -9,7 +9,7 @@ from flask_login import login_required
 
 from datetime import datetime
 from app.models import User, Books, BorrowHistory, Profile
-from app.forms import loginUser, registerUser
+from app.forms import loginUser, registerUser, addBook
 
 from sqlalchemy import desc
 
@@ -177,6 +177,7 @@ def manage_books():
 
 
 @myapp_obj.route("/delete_book/<int:books_id>", methods=["POST"])
+@login_required
 def delete_book(books_id):
     if request.method == "POST":
         if current_user.role == 'Librarian':
@@ -196,23 +197,19 @@ def delete_book(books_id):
                 flash('You do not have permission to delete books.')
     return redirect(url_for("manage_books")) 
 
-@myapp_obj.route("/add_book/<int:books_id>", methods=["POST"])
-def add_book(books_id):
-    if request.method == "POST":
+@myapp_obj.route("/add_book", methods = ['GET', 'POST'])
+@login_required
+def add_book():
+    addBookForm  = addBook()
+    if addBookForm.validate_on_submit():
         if current_user.role == 'Librarian':
-            book = Books.query.get(books_id)
-            if book:
-                if book.count > 0: 
-                    book.count = book.count -1
-                    db.session.commit()
-                    flash("One copy of the book deleted successfully!")
-                else: 
-                    db.session.delete(book)
-                    db.session.commit()
-                    flash("Copies of book deleted successfully!")   
-            else: #no book found in the book table
-                flash("Book not found to delete!")
-        else:
-                flash('You do not have permission to add books.')
-    return redirect(url_for("manage_books")) 
+            new_book = Books(title=addBookForm.title.data, author=addBookForm.author.data,  genre=addBookForm.genre.data, count=addBookForm.count.data)
+            db.session.add(new_book)
+            db.session.commit()
+            flash('Added book successfully!')
+            return redirect(url_for('manage_books'))
+        else :
+            flash('You do not have permission to add book')
+    return render_template('addBooks.html', addBookForm= addBookForm)
 
+        
