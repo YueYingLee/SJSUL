@@ -38,32 +38,10 @@
 </head>
 <body>
     <div class="container">
-        <a class="btn btn-dark p-2" href="/logout">Logout</a>
         <h1>Hello {{username}}!</h1>
-        <h2>Books Table</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Book Title</th>
-                    <th>Book Author</th>
-                    <th>Book Genre</th>
-                    <th>Availability</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for book in books %}
-                <tr>
-                    <td>{{ book.id }}</td>
-                    <td>{{ book.title }}</td>
-                    <td>{{ book.author }}</td>
-                    <td>{{ book.genre }}</td>
-                    <td>{{ book.count}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <a class="btn btn-dark p-2" href="/logout">Logout</a>
+        <p> </p>
+        <a class="btn btn-dark p-2" href="/manage_books">Manage Books</a>
     </div>
 </body>
 </html>

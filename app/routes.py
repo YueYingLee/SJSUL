@@ -164,9 +164,55 @@ def change_user_role(user_id):
           flash('You do not have permission to change roles.')
     return redirect(url_for("adminHome"))
 
-'''@myapp_obj.route("/view_books", methods = ['GET', 'POST'])
+#Function to manage books
+@myapp_obj.route("/manage_books", methods = ['GET', 'POST'])
 @login_required
-def view_books():
-    books = Books.query.filter_by(recipient_id = current_user.id).all()
-    return render_template('view_books.html', user=current_user, emails = emails)''
-    '''
+def manage_books():
+    #books = Books.query.filter_by(recipient_id = current_user.id).all()
+    books = Books.query.filter(Books.count > 0).all()
+    user = current_user
+    username = user.username      
+    return render_template('manageBooks.html', username = username, books=books)
+
+
+
+@myapp_obj.route("/delete_book/<int:books_id>", methods=["POST"])
+def delete_book(books_id):
+    if request.method == "POST":
+        if current_user.role == 'Librarian':
+            book = Books.query.get(books_id)
+            if book:
+                if book.count > 0: 
+                    book.count = book.count -1
+                    db.session.commit()
+                    flash("One copy of the book deleted successfully!")
+                    if book.count == 0 :
+                        db.session.delete(book)
+                        db.session.commit()
+                        flash("Copies of book deleted successfully!")   
+            else: #no book found in the book table
+                flash("Book not found to delete!")
+        else:
+                flash('You do not have permission to delete books.')
+    return redirect(url_for("manage_books")) 
+
+@myapp_obj.route("/add_book/<int:books_id>", methods=["POST"])
+def add_book(books_id):
+    if request.method == "POST":
+        if current_user.role == 'Librarian':
+            book = Books.query.get(books_id)
+            if book:
+                if book.count > 0: 
+                    book.count = book.count -1
+                    db.session.commit()
+                    flash("One copy of the book deleted successfully!")
+                else: 
+                    db.session.delete(book)
+                    db.session.commit()
+                    flash("Copies of book deleted successfully!")   
+            else: #no book found in the book table
+                flash("Book not found to delete!")
+        else:
+                flash('You do not have permission to add books.')
+    return redirect(url_for("manage_books")) 
+
