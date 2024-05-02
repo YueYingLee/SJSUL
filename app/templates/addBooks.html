@@ -92,8 +92,8 @@
 
             <div class="form-group">
                 <label for="Count" class="form-label">Count</label>
-                {{ addBookForm.count(size=32, id="count", class="form-control rounded-pill") }}
-                {% for error in addBookForm.count.errors %}
+                {{ addBookForm.max_count(size=32, id="max_count", class="form-control rounded-pill") }}
+                {% for error in addBookForm.max_count.errors %}
                 <span class="text-danger">[{{ error }}]</span>
                 {% endfor %}
             </div>

@@ -169,7 +169,7 @@ def change_user_role(user_id):
 @login_required
 def manage_books():
     #books = Books.query.filter_by(recipient_id = current_user.id).all()
-    books = Books.query.filter(Books.count > 0).all()
+    books = Books.query.filter(Books.current_count >= 0).all()
     user = current_user
     username = user.username      
     return render_template('manageBooks.html', username = username, books=books)
@@ -182,11 +182,12 @@ def delete_book(books_id):
         if current_user.role == 'Librarian':
             book = Books.query.get(books_id)
             if book:
-                if book.count > 0: 
-                    book.count = book.count -1
+                if book.max_count > 0: 
+                    book.max_count = book.max_count -1
+                    book.current_count = book.current_count -1
                     db.session.commit()
                     flash("One copy of the book deleted successfully!")
-                    if book.count == 0 :
+                    if book.max_count == 0 :
                         db.session.delete(book)
                         db.session.commit()
                         flash("Copies of book deleted successfully!")   
@@ -202,7 +203,7 @@ def add_book():
     addBookForm  = addBook()
     if addBookForm.validate_on_submit():
         if current_user.role == 'Librarian':
-            new_book = Books(title=addBookForm.title.data, author=addBookForm.author.data,  genre=addBookForm.genre.data, count=addBookForm.count.data)
+            new_book = Books(title=addBookForm.title.data, author=addBookForm.author.data, genre=addBookForm.genre.data, max_count=addBookForm.max_count.data, current_count =addBookForm.max_count.data)
             db.session.add(new_book)
             db.session.commit()
             flash('Added book successfully!')
@@ -216,8 +217,8 @@ def add_book():
 @myapp_obj.route("/view_book", methods = ['GET', 'POST'])
 @login_required
 def view_book():        
-    books = Books.query.filter(Books.count > 0).all()
-    borrowHistory = BorrowHistory.query.filter(BorrowHistory.user_id==current_user.id).all()
+    books = Books.query.filter(Books.current_count >= 0).all()
+    borrowHistory = BorrowHistory.query.filter(BorrowHistory.returned == False).all()
     user = current_user
     username = user.username      
     return render_template('viewBook.html', username = username, books=books, borrowHistory = borrowHistory)
@@ -230,13 +231,13 @@ def borrow_book(books_id):
         if current_user.role == 'Student':
             book = Books.query.get(books_id)
             if book:
-                if book.count > 0:
-                    new_borrow = BorrowHistory(user_id=current_user.id, book_id=book.id, borrow_date = datetime.now())
+                if book.current_count > 0:
+                    new_borrow = BorrowHistory(user_id=current_user.id, book_id=book.id, borrow_date = datetime.now(), returned = False)
+                    book.current_count = book.current_count -1
                     db.session.add(new_borrow)                    
-                    book.count = book.count -1
                     db.session.commit()
                     flash("Book borrowed successfully!")
-                else:
+                else: #if all books count are borrowed
                     flash("All copies of this book are currently borrowed.")
             else:
                 flash("Book not found.")
@@ -252,9 +253,12 @@ def return_book(books_id):
         if current_user.role == 'Student':
             book = Books.query.get(books_id)
             if book:
-                    borrow_history = BorrowHistory.query.filter_by(user_id=current_user.id, book_id=book.id).first()
+                    borrow_history = BorrowHistory.query.filter_by(user_id=current_user.id, book_id=book.id, returned =False).first()
                     borrow_history.return_date = datetime.now()  # Set the return date
-                    book.count = book.count + 1
+                    borrow_history.returned = True # set the return status to be true
+                    if (book.current_count +1 <= book.max_count):
+                        book.current_count = book.current_count + 1
+                    db.session.delete(borrow_history)
                     db.session.commit()
                     flash("You returned book successfully!")   
             else: #no book found in the book table
@@ -263,7 +267,3 @@ def return_book(books_id):
                 flash('You do not have permission to return books.')
     return redirect(url_for("view_book")) 
 
-
-
-
-        

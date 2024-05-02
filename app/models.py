@@ -37,7 +37,8 @@ class Books(db.Model):
     title = db.Column(db.String(500), nullable=False)
     author = db.Column(db.String(500), nullable = False)
     genre = db.Column(db.String(500), nullable=False)
-    count = db.Column(db.Integer, nullable=False)
+    max_count = db.Column(db.Integer, nullable=False)
+    current_count=db.Column(db.Integer, nullable= False)
     borrowHistory= db.relationship('BorrowHistory', backref = 'books', lazy = 'dynamic')
     def __repr__(self): #for debugging process
         return f'<books {self.id}: {self.title}>'
@@ -48,6 +49,7 @@ class BorrowHistory(db.Model):
     book_id = db.Column(db.Integer, db.ForeignKey('books.id'))
     borrow_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     return_date = db.Column(db.DateTime)
+    returned= db.Column(db.Boolean, nullable=False, default=False)   
 
 class Profile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
