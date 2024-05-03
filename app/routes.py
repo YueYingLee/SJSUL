@@ -6,6 +6,8 @@ from flask_login import current_user
 from flask_login import login_user
 from flask_login import logout_user
 from flask_login import login_required
+from sqlalchemy import or_  # Import the or_ function
+
 
 from datetime import datetime
 from app.models import User, Books, BorrowHistory
@@ -108,14 +110,18 @@ def librarianHome():
     books = Books.query.all()
     return render_template('librarianHome.html', username = username, users = users, books = books, role=role)
 
-@myapp_obj.route("/adminHome")
+@myapp_obj.route("/adminHome", methods=["GET", "POST"])
 @login_required
 def adminHome():
     user = current_user
     username = user.username
     role = user.role
-    users = User.query.all()
-    return render_template('adminHome.html', username = username, users = users, role= role)
+    search_user = request.form.get('search')
+    if search_user:
+        users= User.query.filter(or_(User.role.ilike(f'%{search_user}%'), User.username.ilike(f'%{search_user}%'))).all()
+    else:
+        users = User.query.all()
+    return render_template('adminHome.html', username = username, users = users, role= role, search_user= search_user)
 
 @myapp_obj.route("/approve_user/<int:user_id>", methods=["POST"])
 def approve_user(user_id):
