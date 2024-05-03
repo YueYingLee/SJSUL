@@ -9,6 +9,25 @@
             font-family: Arial, sans-serif;
             background-color: #ffffff;
             color: #000000;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            display: flex;
+            align-items: center;
+            background-color: #87cefa; 
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .navbar a {
+            color: black; 
+            text-decoration: none; 
+            margin-right: 25px;
+        }
+
+        .navbar a:last-child {
+         margin-left: auto;
         }
         .container {
             max-width: 800px;
@@ -16,6 +35,19 @@
             padding: 20px;
             border: 1px solid #cccccc;
             border-radius: 10px;
+        }  
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
         }
         table {
             width: 100%;
@@ -29,22 +61,50 @@
         }
         th {
             background-color: #f2f2f2;
+        } 
+        h1, h2, p {
+            text-align: center; /* Center align text */
         }
 
         .submit-button {
         margin-right: 10px;
     }        
+       
+    .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+        .alert-success {
+            color: #3c763d;
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+        }
+        .alert-error {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+        }
     </style>
 </head>
-<body>
-    <div class="container">
-        <a class="btn btn-dark p-2" href="/logout">Logout</a>
-         
-        <h1>Hello {{username}}!</h1>
-        <h1>This is view book for student page</h1>
-        <h2>Student can choose to borrow book here</h2>
-        
-        <h2>Books Table</h2>
+<body> 
+    <div class="navbar">
+        <a href="/generalHome">SJSU L</a> 
+        <a href="/generalHome">Home</a>  
+        <a  href="/logout">Logout</a>
+    </div> 
+    <div class="container">  
+        {% with messages = get_flashed_messages(with_categories=true) %}
+     {% if messages %}
+         {% for category, message in messages %}
+             <div class="alert alert-{{ category }}">
+                 {{ message }}
+             </div>
+         {% endfor %}
+     {% endif %}
+ {% endwith %}                
+        <h1>Books List</h1>
         {%if books %} <!--display books informatin if there are books-->
         <table>
             <thead>
@@ -75,21 +135,21 @@
                         </td>
                     </tr>
                 {% endfor %}
-            </tbody>
-        </table>
+            </tbody>  
         {% else %} 
         <table>
             <thead>
                 <tr>
-                   
                 </tr>
             </thead>
             <tbody> 
                 
            
         {% endif %}
-
-        <h2>Your Borrow History</h2>
+         </table>
+        </div>
+        <div class="container">   
+        <h1>Your current borrow</h1>
          <!--display borrow book history if there are any-->
         <table>
             <thead>

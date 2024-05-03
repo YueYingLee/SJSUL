@@ -18,11 +18,6 @@ from sqlalchemy import desc
 def landing():
     return render_template('landing.html')
 
-
-
-
-
-
 @myapp_obj.route("/register", methods =['GET', 'POST'])
 def register():
         registerForm  = registerUser()
@@ -36,7 +31,7 @@ def register():
             flash('Successful registration!')
             return redirect(url_for('login'))
           else :
-             flash('The username is not available. Please choose another username.')
+             flash('The username is not available. Please choose another username.',  category ='error')
         return render_template('register.html', registerForm=registerForm)
 
 
@@ -65,11 +60,11 @@ def login():
                   return redirect(url_for('publicHome'))  # redirect to general homepage
               
             else :
-                flash('Your account need to be approved by admin before accessing')
+                flash('Your account need to be approved by admin before accessing',category ='error')
           else :
-             flash(f'Invalid password. Try again.')
+             flash(f'Invalid password. Try again.',category ='error')
         else: 
-             flash(f'Invalid username. Try again or register an account.')  
+             flash(f'Invalid username. Try again or register an account.',category ='error')  
 
     return render_template('login.html', loginForm=loginForm)
 
@@ -77,7 +72,7 @@ def login():
 @login_required
 def logout():
        logout_user()
-       return redirect(url_for('login'))
+       return redirect(url_for('landing'))
 
 @myapp_obj.route("/generalHome")
 @login_required
@@ -96,7 +91,7 @@ def publicHome():
     username = user.username
     role = user.role
     users = User.query.all()
-    books = Books.query.all()
+    books = Books.query.filter(Books.current_count >= 0).all()
     return render_template('publicHome.html', username = username, users = users, books = books, role=role)
 
 @myapp_obj.route("/librarianHome")
@@ -128,7 +123,7 @@ def approve_user(user_id):
             db.session.commit()
             flash("User approved successfully!")
         else:
-            flash("User not found or already approved!")
+            flash("User not found or already approved!" , category ='error')
     # Redirect back to the admin dashboard
     return redirect(url_for("adminHome"))
 
@@ -144,9 +139,9 @@ def delete_user(user_id):
             db.session.commit()
             flash("User deleted successfully!")
           else:
-            flash("User not found!")
+            flash("User not found!", category ='error')
         else:
-             flash('You do not have permission to delete users.')
+             flash('You do not have permission to delete users.' , category ='error')
     return redirect(url_for("adminHome"))
 
 
@@ -160,7 +155,7 @@ def reject_user(user_id):
             db.session.commit()
             flash("User rejected successfully!")
         else:
-            flash("User not found or already rejected!")
+            flash("User not found or already rejected!", category ='error')
     return redirect(url_for("adminHome"))
 
 
@@ -177,23 +172,34 @@ def change_user_role(user_id):
                   db.session.commit()
                   flash("User role updated successfully!")
               else:
-                 flash("New role is the same as the current role")
+                 flash("New role is the same as the current role",category ='error')
             else:
-               flash ('No new roles are provided')
+               flash ('No new roles are provided',category ='error')
           else:
-            flash("User not found")
+            flash("User not found",category ='error')
         else:
-          flash('You do not have permission to change roles.')
+          flash('You do not have permission to change roles.' ,category ='error')
     return redirect(url_for("adminHome"))
 
 #Function to manage books
 @myapp_obj.route("/manage_books", methods = ['GET', 'POST'])
 @login_required
 def manage_books():
-    #books = Books.query.filter_by(recipient_id = current_user.id).all()
-    books = Books.query.filter(Books.current_count >= 0).all()
-    user = current_user
-    username = user.username      
+    if current_user.role == 'Librarian':
+        #books = Books.query.filter_by(recipient_id = current_user.id).all()
+        books = Books.query.filter(Books.current_count >= 0).all()
+        user = current_user
+        username = user.username      
+    else:
+        flash('You do not have permission to manage books.' ,category ='error')
+        if current_user.role == 'Admin':
+                  return redirect(url_for('adminHome'))  # redirect to admin homepage
+                         
+        elif  current_user.role == 'Student' or current_user.role == 'Faculty':
+            return redirect(url_for('generalHome'))  # redirect to general homepage
+        
+        elif current_user.role == 'Public':
+            return redirect(url_for('publicHome'))  # redirect to general homepage
     return render_template('manageBooks.html', username = username, books=books)
 
 
@@ -214,24 +220,40 @@ def delete_book(books_id):
                         db.session.commit()
                         flash("Copies of book deleted successfully!")   
             else: #no book found in the book table
-                flash("Book not found to delete!")
+                flash("Book not found to delete!", category ='error')
         else:
-                flash('You do not have permission to delete books.')
+                flash('You do not have permission to delete books.', category ='error')
+                if current_user.role == 'Admin':
+                  return redirect(url_for('adminHome'))  # redirect to admin homepage
+                         
+                elif  current_user.role == 'Student' or current_user.role == 'Faculty':
+                    return redirect(url_for('generalHome'))  # redirect to general homepage
+                
+                elif current_user.role == 'Public':
+                    return redirect(url_for('publicHome'))  # redirect to general homepage
     return redirect(url_for("manage_books")) 
 
 @myapp_obj.route("/add_book", methods = ['GET', 'POST'])
 @login_required
 def add_book():
     addBookForm  = addBook()
-    if addBookForm.validate_on_submit():
-        if current_user.role == 'Librarian':
+    if current_user.role == 'Librarian':
+        if addBookForm.validate_on_submit():
             new_book = Books(title=addBookForm.title.data, author=addBookForm.author.data, genre=addBookForm.genre.data, max_count=addBookForm.max_count.data, current_count =addBookForm.max_count.data)
             db.session.add(new_book)
             db.session.commit()
             flash('Added book successfully!')
             return redirect(url_for('manage_books'))
-        else :
-            flash('You do not have permission to add book')
+    else :
+            flash('You do not have permission to add book', category ='error')
+            if current_user.role == 'Admin':
+                  return redirect(url_for('adminHome'))  # redirect to admin homepage
+                         
+            elif  current_user.role == 'Student' or current_user.role == 'Faculty':
+                return redirect(url_for('generalHome'))  # redirect to general homepage
+            
+            elif current_user.role == 'Public':
+                return redirect(url_for('publicHome'))  # redirect to general homepage
     return render_template('addBooks.html', addBookForm= addBookForm)
 
 
@@ -260,11 +282,11 @@ def borrow_book(books_id):
                     db.session.commit()
                     flash("Book borrowed successfully!")
                 else: #if all books count are borrowed
-                    flash("All copies of this book are currently borrowed.")
+                    flash("All copies of this book are currently borrowed.", category ='error')
             else:
                 flash("Book not found.")
         else:
-            flash("Only students can borrow books.")
+            flash("Only students or faculty can borrow books.", category ='error')
     return redirect(url_for("view_book"))
 
 
@@ -284,8 +306,8 @@ def return_book(books_id):
                     db.session.commit()
                     flash("You returned book successfully!")   
             else: #no book found in the book table
-                flash("Book not found to return!")
+                flash("Book not found to return!", category ='error')
         else:
-                flash('You do not have permission to return books.')
+                flash('You do not have permission to return books.', category ='error')
     return redirect(url_for("view_book")) 
 

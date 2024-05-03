@@ -4,12 +4,13 @@
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SJSU L</title>
+    <title>SJSU L </title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
+            padding: 0; 
+            align-items: center;
             background-color: white; 
         }
         .navbar {
@@ -20,12 +21,16 @@
             color: black; /* Black text color */
             font-weight: bold; /* Bold font weight */
         }
+        .navbar-link {
+            color: black; /* Set the color to black */
+            text-decoration: none; /* Remove underline */
+            }
         .container {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: calc(100vh - 100px); /* Set height to 100% of viewport height minus the height of the navbar */
+            height: calc(100vh - 200px); /* Set height to 100% of viewport height minus the height of the navbar */
         }
         .card {
             background-color: #fff; /* White background color for cards */
@@ -55,17 +60,23 @@
         }
 
         .book-image {
-            max-width: 400px; /* Adjust the maximum width of the book image */
-            margin-top: 5px; /* Add some space between the text and the image */
+            max-width: 400px;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
+        h1, h2, p {
+            text-align: center; /* Center align text */
+        }
+         
     </style>
 </head>
 <body>
     <div class="navbar">
-        SJSU L
+        <a href="/" class="navbar-link"> Welcome to SJSU L</div>
     </div>
     <div class="container">
-        <h1> Welcome to SJSUL </h1> 
         <img src="{{ url_for('static', filename='/book.jpg') }}" alt="Book Image" class="book-image">
         <h2>A fictitious library implemented with Role Based Access Control Model (RBAC)</h2>
         <h3> CMPE 132 Project developed by Yue Ying Lee</h3>

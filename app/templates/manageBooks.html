@@ -3,19 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>This is librarian Tables</title>
+    <title>Manage Books</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #ffffff;
             color: #000000;
+            margin: 0;
+            padding: 0;
         }
+        .navbar {
+            display: flex;
+            align-items: center;
+            background-color: #87cefa; 
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .navbar a {
+            color: black; 
+            text-decoration: none; 
+            margin-right: 25px;
+        }
+
+        .navbar a:last-child {
+         margin-left: auto;
+        }
+
         .container {
             max-width: 800px;
             margin: 50px auto;
             padding: 20px;
             border: 1px solid #cccccc;
             border-radius: 10px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
         }
         table {
             width: 100%;
@@ -34,16 +63,34 @@
         .submit-button {
         margin-right: 10px;
     }        
+    h1, h2, p {
+            text-align: center; 
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #ffffff;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <a class="btn btn-dark p-2" href="/logout">Logout</a>
-        <a class="btn btn-dark p-2" href="/add_book">Add Books</a>
-        <h1>Hello {{username}}!</h1>
-        <h1>This is manageBooks html!</h1>
-        
-        <h2>Books Table</h2>
+    <div class="navbar">
+        <a href="/librarianHome">SJSU L</a> 
+        <a href="/librarianHome">Manage Books</a>  
+        <a  href="/logout">Logout</a>
+       
+    </div> 
+    <h1>Books List</h1>
+    <div class="container">        
         {%if books %} <!--display books informatin if there are books-->
         <table>
             <thead>
@@ -85,6 +132,10 @@
                 <h2>No books available.</h2></tr>
            
         {% endif %}
+        <br>
+        <a href="/add_book" class= "btn btn-info" role="button" style="background-color: green; text-decoration: none;  text-align: center;">Add Book</a>
     </div>
+    
 </body>
+
 </html>

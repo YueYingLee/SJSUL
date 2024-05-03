@@ -3,19 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>This is libranian homepage Table</title>
+    <title>Librarian Homepage</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #ffffff;
             color: #000000;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            background-color: #87cefa; 
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .navbar a {
+            color: black; 
+            text-decoration: none; 
         }
         .container {
             max-width: 800px;
-            margin: 50px auto;
+            margin: 20px auto; 
             padding: 20px;
             border: 1px solid #cccccc;
             border-radius: 10px;
+            background-color: #fff; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
         }
         table {
             width: 100%;
@@ -34,15 +59,63 @@
         .submit-button {
         margin-right: 10px;
     }        
+     .card {
+            background-color: #fff; /* White background color for cards */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Box shadow for cards */
+            padding: 20px;
+             
+            width: 300px;
+            text-align: center;
+            margin: 0 auto; 
+            font-weight: bold; /* Bold font weight for cards */
+        }
+        .card-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .card-link {
+            display: block;
+            text-decoration: none;
+            background-color: #6495ed; /* Dark blue color for card links */
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .card-link:hover {
+            background-color: #4169e1; /* Darker shade of blue on hover */
+        } 
+
+        .book-image {
+            max-width: 400px;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        h1, h2, p {
+            text-align: center; /* Center align text */
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Hello {{username}}!</h1>
-        Your Current role:  {{role}} <p></p>
+    <div class="navbar">
+        <a href="/librarianHome">SJSU L</a> 
         <a class="btn btn-dark p-2" href="/logout">Logout</a>
-        <p> </p>
-        <a class="btn btn-dark p-2" href="/manage_books">Manage Books</a>
+    </div> 
+     <img src="{{ url_for('static', filename='/book.jpg') }}" alt="Book Image" style = "width:50%; height:50%;" class="book-image">
+    <h1>Hello {{username}}!</h1>
+    <p>Your current role:  {{role}} <p></p>
+  
+        <div class="card">
+            <h2 class="card-title">Manage Books</h2>
+            <a href="/manage_books" class="card-link">View Books</a> 
+            <br>
+            <a href="/add_book" class="card-link">Add Books</a> 
+            <br>
+            <a href="/manage_books" class="card-link">Delete Books</a>
+        </div>
     </div>
 </body>
 </html>
