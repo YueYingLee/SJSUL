@@ -37,6 +37,8 @@
             border: 1px solid #cccccc;
             border-radius: 10px;
             text-align: center;
+            background-color: #fff; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         h1 {
             font-size: 36px;
@@ -67,7 +69,7 @@
             text-align: center; 
         }
 
-        .btn {
+        .add_btn {
             display: inline-block;
             padding: 10px 20px;
             font-size: 16px;
@@ -77,9 +79,7 @@
             color: #ffffff;
             cursor: pointer;
         }
-        .btn:hover {
-            background-color: #0056b3;
-        }
+        
 
         .alert {
             padding: 15px;
@@ -97,16 +97,14 @@
             background-color: #f2dede;
             border-color: #ebccd1;
         }
+        .search-field {
+    width: 225px; /* Adjust the width as needed */
+}
+
     </style>
 </head>
 <body>
     <div class="navbar">
-        <!--<a href="{% if role == 'Librarian' %}/librarianHome {%else %}/adminHome{% endif %}">SJSU L</a></li>
-        <a href="{% if role == 'Librarian' %}/librarianHome {%else %}/adminHome{% endif %}">Home</a></li>
-        <a href="{% if role == 'Admin' %}/adminHome{% endif %}">View Users</a>
-        <a  href="/logout">Logout</a>
-
-        --> 
         {% if role == 'Admin' %}
         <a href="/adminHome">SJSU L</a>
             <a href="/adminHome">Home</a>
@@ -127,7 +125,14 @@
      {% endif %}
  {% endwith %}
     <h1>Books List</h1>
-    <div class="container">        
+    <div class="container">  
+        <form action="{{ url_for('manage_books') }}" method="post" style="display: inline" class="form-inline">
+            <input type="text" name="search" class="form-control mr-2 search-field" placeholder="Search by book title, author or genre">
+            <button type="submit" class="btn btn-primary">Search</button>  
+        
+        <form action="{{ url_for('manage_books') }}" method="post" style="display: inline" class="form-inline">
+            <button type="submit" class="btn btn-primary">Show all books</button> 
+            </form>      
         {%if books %} <!--display books informatin if there are books-->
         <table>
             <thead>
@@ -170,7 +175,7 @@
            
         {% endif %}
         <br>
-        <a href="/add_book" class= "btn btn-info" role="button" style="background-color: green; text-decoration: none;  text-align: center;">Add Book</a>
+        <a href="/add_book" class= "add_btn btn-info" role="button" style="background-color: green; text-decoration: none;  text-align: center;">Add Book</a>
     </div>
     
 </body>

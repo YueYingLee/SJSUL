@@ -200,10 +200,14 @@ def change_user_role(user_id):
 @login_required
 def manage_books():
     role = current_user.role
-    if current_user.role == 'Librarian' or current_user.role == 'Admin': #only librarian and admin can manage books 
-        books = Books.query.filter(Books.current_count >= 0).all() #do a query on all books in the library
+    if current_user.role == 'Librarian' or current_user.role == 'Admin': #only librarian and admin can manage books   
         user = current_user
-        username = user.username      
+        username = user.username    
+        search_book = request.form.get('search')
+        if search_book:
+            books= Books.query.filter(or_(Books.title.ilike(f'%{search_book}%'), Books.author.ilike(f'%{search_book}%'), Books.genre.ilike(f'%{search_book}%'))).all()
+        else:
+            books =  Books.query.filter(Books.current_count >= 0).all() #do a query on all books in the library  
     else:
         flash('You do not have permission to manage books.' ,category ='error')                         
         if  current_user.role == 'Student' or current_user.role == 'Faculty':
@@ -211,7 +215,7 @@ def manage_books():
         
         elif current_user.role == 'Public':
             return redirect(url_for('publicHome'))  # redirect to general homepage
-    return render_template('manageBooks.html', username = username, books=books, role = role)
+    return render_template('manageBooks.html', username = username, books=books, role = role, search_book = search_book)
 
 
 @myapp_obj.route("/delete_book/<int:books_id>", methods=["POST"])
@@ -269,12 +273,16 @@ def add_book():
 @myapp_obj.route("/view_book", methods = ['GET', 'POST'])
 @login_required
 def view_book():        
-    books = Books.query.filter(Books.current_count >= 0).all()
+    search_book = request.form.get('search')
+    if search_book:
+            books= Books.query.filter(or_(Books.title.ilike(f'%{search_book}%'), Books.author.ilike(f'%{search_book}%'), Books.genre.ilike(f'%{search_book}%'))).all()
+    else:
+            books =  Books.query.filter(Books.current_count >= 0).all() #do a query on all books in the library  
     borrowHistory = BorrowHistory.query.filter(BorrowHistory.returned == False).all()
     role = current_user.role
     user = current_user
     username = user.username      
-    return render_template('viewBook.html', username = username, books=books, borrowHistory = borrowHistory, role= role)
+    return render_template('viewBook.html', username = username, books=books, borrowHistory = borrowHistory, role= role, search_book = search_book)
      
 
 @myapp_obj.route("/borrow_book/<int:books_id>", methods=["POST"])

@@ -28,7 +28,7 @@ class loginUser(FlaskForm):
 class addBook(FlaskForm): 
     title = StringField('Title of Book',validators =[DataRequired(), Length (min = 1, max = 500)])
     author = StringField('Author(s)of Book',validators =[DataRequired(), Length (min = 1, max = 500)])
-    genre = StringField('Genre(s) of Book',validators =[DataRequired(), Length (min = 4, max = 500)])
+    genre = StringField('Genre(s) of Book',validators =[DataRequired(), Length (min = 1, max = 500)])
     max_count = IntegerField('Copies of Book',validators =[DataRequired()])
     submit = SubmitField ("Add")
 
