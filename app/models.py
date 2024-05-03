@@ -50,12 +50,7 @@ class BorrowHistory(db.Model):
     borrow_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     return_date = db.Column(db.DateTime)
     returned= db.Column(db.Boolean, nullable=False, default=False)   
-
-class Profile(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    role = db.Column(db.String(200))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
+ 
 
 @login.user_loader
 def load_user(id):
