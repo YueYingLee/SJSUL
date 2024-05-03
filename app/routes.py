@@ -62,7 +62,7 @@ def login():
                   return redirect(url_for('generalHome'))  # redirect to general homepage
               
               elif valid_user.role == 'Public':
-                  return redirect(url_for('generalHome'))  # redirect to general homepage
+                  return redirect(url_for('publicHome'))  # redirect to general homepage
               
             else :
                 flash('Your account need to be approved by admin before accessing')
@@ -87,6 +87,17 @@ def generalHome():
     role = user.role
     users = User.query.all()
     return render_template('generalHome.html', username = username, users = users, role=role)
+
+
+@myapp_obj.route("/publicHome")
+@login_required
+def publicHome():
+    user = current_user
+    username = user.username
+    role = user.role
+    users = User.query.all()
+    books = Books.query.all()
+    return render_template('publicHome.html', username = username, users = users, books = books, role=role)
 
 @myapp_obj.route("/librarianHome")
 @login_required
