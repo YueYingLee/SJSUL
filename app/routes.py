@@ -28,7 +28,7 @@ def register():
             user.set_password(registerForm.password.data) 
             db.session.add(user)
             db.session.commit()
-            flash('Successful registration!')
+            flash('Successful registration!', category = 'success')
             return redirect(url_for('login'))
           else :
              flash('The username is not available. Please choose another username.',  category ='error')
@@ -121,7 +121,7 @@ def approve_user(user_id):
             user.approved = True
             user.role = user.registered_role
             db.session.commit()
-            flash("User approved successfully!")
+            flash("User approved successfully!" ,category = 'success')
         else:
             flash("User not found or already approved!" , category ='error')
     # Redirect back to the admin dashboard
@@ -137,7 +137,7 @@ def delete_user(user_id):
             user.approved = True
             db.session.delete(user)
             db.session.commit()
-            flash("User deleted successfully!")
+            flash("User deleted successfully!", category = 'success')
           else:
             flash("User not found!", category ='error')
         else:
@@ -153,7 +153,7 @@ def reject_user(user_id):
           if user and user.approved == False:
             db.session.delete(user)
             db.session.commit()
-            flash("User rejected successfully!")
+            flash("User rejected successfully!", category = 'success')
         else:
             flash("User not found or already rejected!", category ='error')
     return redirect(url_for("adminHome"))
@@ -170,7 +170,7 @@ def change_user_role(user_id):
               if new_role != user.role:
                   user.role = new_role
                   db.session.commit()
-                  flash("User role updated successfully!")
+                  flash("User role updated successfully!", category = 'success')
               else:
                  flash("New role is the same as the current role",category ='error')
             else:
@@ -214,11 +214,11 @@ def delete_book(books_id):
                     book.max_count = book.max_count -1
                     book.current_count = book.current_count -1
                     db.session.commit()
-                    flash("One copy of the book deleted successfully!")
+                    flash("One copy of the book deleted successfully!", category = 'success')
                     if book.max_count == 0 :
                         db.session.delete(book)
                         db.session.commit()
-                        flash("Copies of book deleted successfully!")   
+                        flash("Copies of book deleted successfully!", category = 'success')   
             else: #no book found in the book table
                 flash("Book not found to delete!", category ='error')
         else:
@@ -242,7 +242,7 @@ def add_book():
             new_book = Books(title=addBookForm.title.data, author=addBookForm.author.data, genre=addBookForm.genre.data, max_count=addBookForm.max_count.data, current_count =addBookForm.max_count.data)
             db.session.add(new_book)
             db.session.commit()
-            flash('Added book successfully!')
+            flash('Added book successfully!',category = 'success')
             return redirect(url_for('manage_books'))
     else :
             flash('You do not have permission to add book', category ='error')
@@ -280,7 +280,7 @@ def borrow_book(books_id):
                     book.current_count = book.current_count -1
                     db.session.add(new_borrow)                    
                     db.session.commit()
-                    flash("Book borrowed successfully!")
+                    flash("Book borrowed successfully!",category = 'success')
                 else: #if all books count are borrowed
                     flash("All copies of this book are currently borrowed.", category ='error')
             else:
@@ -304,7 +304,7 @@ def return_book(books_id):
                         book.current_count = book.current_count + 1
                     db.session.delete(borrow_history)
                     db.session.commit()
-                    flash("You returned book successfully!")   
+                    flash("You returned book successfully!",category = 'success')   
             else: #no book found in the book table
                 flash("Book not found to return!", category ='error')
         else:

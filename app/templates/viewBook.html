@@ -155,7 +155,7 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Borrowed Book id</th>
+                    <th>Borrowed Book Title</th>
                     <th>Borrowed Date</th>
                     <th>Actions</th>
                     
@@ -168,7 +168,7 @@
                             {% if book.id == borrowed.book_id %}
                             <tr>
                                 <td>{{ borrowed.id }}</td>
-                                <td>{{ borrowed.book_id }}</td>
+                                <td>{{ book.title}}</td>
                                 <td>{{ borrowed.borrow_date.strftime("%b %d, %Y %H:%M:%S") }}</td>
                                 <td>
                                     <!-- Student can choose to return book-->
