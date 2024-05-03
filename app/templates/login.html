@@ -9,13 +9,30 @@
             font-family: Arial, sans-serif;
             background-color: #ffffff;
             color: #000000;
+            margin: 0;
         }
+        .navbar {
+          background-color: #87cefa; 
+            text-align: center;
+            padding: 50px 0;
+            font-size: 30px;
+            color: black; /* Black text color */
+            font-weight: bold; /* Bold font weight */
+        } 
+
+        .navbar-link {
+            color: black; /* Set the color to black */
+            text-decoration: none; /* Remove underline */
+            }
+
+       
         .container {
             max-width: 600px;
-            margin: 50px auto;
+            margin: 20px auto;
             padding: 20px;
             border: 1px solid #cccccc;
             border-radius: 10px;
+            align-items: center;
         }
         .form-group {
             margin-bottom: 20px;
@@ -48,10 +65,13 @@
             color: #ff0000;
             font-size: 14px;
         }
+       
     </style>
 </head>
-<body>
-    <div class="container d-flex align-items-center justify-content-center">
+<body> <div class="navbar">
+    <a href="/" class="navbar-link">SJSU L</a> </div>
+ </div>  {% block content %} 
+    <div class="container">
         <div class="login-form-wrapper">
             {% with messages = get_flashed_messages() %}
             {% if messages %}
@@ -83,10 +103,12 @@
                 </div>
                 <div class="form-group">
                     {{ loginForm.submit(class="btn btn-primary rounded-pill") }}
-                    <a href="/register" class="btn btn-info" role="button">Register</a>
+                    <br> Do not have an account? 
+                    <a href="/register" class= "btn btn-info" role="button" style="background-color: green; text-decoration: none;">Register</a>
                 </div>
             </form>
         </div>
     </div>
+    {% endblock %}
 </body>
 </html>

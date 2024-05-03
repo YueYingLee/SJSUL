@@ -13,8 +13,16 @@ from app.forms import loginUser, registerUser, addBook
 
 from sqlalchemy import desc
 
-
+#landing page 
 @myapp_obj.route("/")
+def landing():
+    return render_template('landing.html')
+
+
+
+
+
+
 @myapp_obj.route("/register", methods =['GET', 'POST'])
 def register():
         registerForm  = registerUser()
@@ -76,25 +84,28 @@ def logout():
 def generalHome():
     user = current_user
     username = user.username
+    role = user.role
     users = User.query.all()
-    return render_template('generalHome.html', username = username, users = users)
+    return render_template('generalHome.html', username = username, users = users, role=role)
 
 @myapp_obj.route("/librarianHome")
 @login_required
 def librarianHome():
     user = current_user
     username = user.username
+    role = user.role
     users = User.query.all()
     books = Books.query.all()
-    return render_template('librarianHome.html', username = username, users = users, books = books)
+    return render_template('librarianHome.html', username = username, users = users, books = books, role=role)
 
 @myapp_obj.route("/adminHome")
 @login_required
 def adminHome():
     user = current_user
     username = user.username
+    role = user.role
     users = User.query.all()
-    return render_template('adminHome.html', username = username, users = users)
+    return render_template('adminHome.html', username = username, users = users, role= role)
 
 @myapp_obj.route("/approve_user/<int:user_id>", methods=["POST"])
 def approve_user(user_id):
@@ -228,7 +239,7 @@ def view_book():
 @login_required
 def borrow_book(books_id):
     if request.method == "POST":
-        if current_user.role == 'Student':
+        if current_user.role == 'Student' or current_user.role == 'Faculty':
             book = Books.query.get(books_id)
             if book:
                 if book.current_count > 0:
@@ -250,7 +261,7 @@ def borrow_book(books_id):
 @login_required
 def return_book(books_id):
     if request.method == "POST":
-        if current_user.role == 'Student':
+        if current_user.role == 'Student' or current_user.role == 'Faculty':
             book = Books.query.get(books_id)
             if book:
                     borrow_history = BorrowHistory.query.filter_by(user_id=current_user.id, book_id=book.id, returned =False).first()
