@@ -165,7 +165,7 @@
                 {% for borrowed in borrowHistory %}
                     {% if borrowed.returned == False %}
                         {% for book in books %}
-                            {% if book.id == borrowed.book_id %}
+                            {% if book.id == borrowed.book_id and borrowed.user_id == current_user.id %}
                             <tr>
                                 <td>{{ borrowed.id }}</td>
                                 <td>{{ book.title}}</td>
