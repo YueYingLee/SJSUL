@@ -24,6 +24,11 @@
         .navbar a {
             color: black; 
             text-decoration: none; 
+            margin-right: 25px;
+        }
+
+        .navbar a:last-child {
+         margin-left: auto;
         }
         .container {
             max-width: 800px;
@@ -102,6 +107,7 @@
 <body>
     <div class="navbar">
         <a href="/librarianHome">SJSU L</a> 
+        <a href="/librarianHome">Home</a>  
         <a class="btn btn-dark p-2" href="/logout">Logout</a>
     </div> 
      <img src="{{ url_for('static', filename='/book.jpg') }}" alt="Book Image" style = "width:50%; height:50%;" class="book-image">

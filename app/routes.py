@@ -8,7 +8,7 @@ from flask_login import logout_user
 from flask_login import login_required
 
 from datetime import datetime
-from app.models import User, Books, BorrowHistory, Profile
+from app.models import User, Books, BorrowHistory
 from app.forms import loginUser, registerUser, addBook
 
 from sqlalchemy import desc
@@ -18,18 +18,24 @@ from sqlalchemy import desc
 def landing():
     return render_template('landing.html')
 
+#register function
 @myapp_obj.route("/register", methods =['GET', 'POST'])
 def register():
         registerForm  = registerUser()
         if registerForm.validate_on_submit():
+          #Determine whether the username has been claimed and exists in database since the new user cannot register with same username
           same_Username = User.query.filter_by(username = registerForm.username.data).first()
           if same_Username == None:
             user = User(username= registerForm.username.data, role ='Public', registered_role = registerForm.role.data, approved = False)
+            '''
+            User will be registered as public and cannot access the website until being approved by the admin. 
+            Depending on the role being approved by admin, the user will have different access to the website.
+            '''
             user.set_password(registerForm.password.data) 
             db.session.add(user)
             db.session.commit()
             flash('Successful registration!', category = 'success')
-            return redirect(url_for('login'))
+            return redirect(url_for('login')) #auto redirect user to login page after registration
           else :
              flash('The username is not available. Please choose another username.',  category ='error')
         return render_template('register.html', registerForm=registerForm)
@@ -40,15 +46,15 @@ def login():
     loginForm = loginUser()
     if loginForm.validate_on_submit():
         valid_user = User.query.filter_by(username = loginForm.username.data).first()
-        if valid_user != None:
+        if valid_user != None: #if the user exist in the database, check the password. Once the password matches, admit the user into the website and redirect them into different homepages depending on their roles
           if valid_user.check_password(loginForm.password.data)== True:
-            if valid_user.approved:
+            if valid_user.approved: #check whether the user has been approved by admin
               login_user(valid_user)
               if valid_user.role == 'Admin':
                   return redirect(url_for('adminHome'))  # redirect to admin homepage
               
               elif valid_user.role == 'Librarian':
-                  return redirect(url_for('librarianHome'))  # redirect to libranian homepage
+                  return redirect(url_for('librarianHome'))  # redirect to librarian homepage
               
               elif valid_user.role == 'Student':
                   return redirect(url_for('generalHome'))  # redirect to general homepage
@@ -57,13 +63,13 @@ def login():
                   return redirect(url_for('generalHome'))  # redirect to general homepage
               
               elif valid_user.role == 'Public':
-                  return redirect(url_for('publicHome'))  # redirect to general homepage
+                  return redirect(url_for('publicHome'))  # redirect to public homepage
               
-            else :
+            else : #the user registered for an account but not approved by admin yet
                 flash('Your account need to be approved by admin before accessing',category ='error')
-          else :
+          else : #the user entered a wrong password 
              flash(f'Invalid password. Try again.',category ='error')
-        else: 
+        else: #the user either entered a wrong username or have not register an account 
              flash(f'Invalid username. Try again or register an account.',category ='error')  
 
     return render_template('login.html', loginForm=loginForm)
@@ -80,8 +86,7 @@ def generalHome():
     user = current_user
     username = user.username
     role = user.role
-    users = User.query.all()
-    return render_template('generalHome.html', username = username, users = users, role=role)
+    return render_template('generalHome.html', username = username,  role=role)
 
 
 @myapp_obj.route("/publicHome")
@@ -90,9 +95,8 @@ def publicHome():
     user = current_user
     username = user.username
     role = user.role
-    users = User.query.all()
-    books = Books.query.filter(Books.current_count >= 0).all()
-    return render_template('publicHome.html', username = username, users = users, books = books, role=role)
+    books = Books.query.filter(Books.current_count >= 0).all() #do query on books since public can only see what books available in the library
+    return render_template('publicHome.html', username = username, books = books, role=role)
 
 @myapp_obj.route("/librarianHome")
 @login_required
@@ -116,14 +120,17 @@ def adminHome():
 @myapp_obj.route("/approve_user/<int:user_id>", methods=["POST"])
 def approve_user(user_id):
     if request.method == "POST":
-        user = User.query.get(user_id)
-        if user and user.approved == False:
-            user.approved = True
-            user.role = user.registered_role
-            db.session.commit()
-            flash("User approved successfully!" ,category = 'success')
+        if current_user.role == 'Admin': #User can only approve user if they are admin. Else, error message will be popped out
+            user = User.query.get(user_id)
+            if user and user.approved == False:
+                user.approved = True #change the approved to true so that the registered user can now access the website
+                user.role = user.registered_role
+                db.session.commit() #commit changes after editing
+                flash("User approved successfully!" ,category = 'success')
+            else:
+                flash("User not found or already approved!" , category ='error')
         else:
-            flash("User not found or already approved!" , category ='error')
+             flash('You do not have permission to approve users.' , category ='error')
     # Redirect back to the admin dashboard
     return redirect(url_for("adminHome"))
 
@@ -131,10 +138,9 @@ def approve_user(user_id):
 @myapp_obj.route("/delete_user/<int:user_id>", methods=["POST"])
 def delete_user(user_id):
     if request.method == "POST":
-        if current_user.role == 'Admin':
+        if current_user.role == 'Admin': #User can only delete user if they are admin. Else, error message will be popped out
           user = User.query.get(user_id)
-          if user:
-            user.approved = True
+          if user: #if the user is found in database, delete the user and commit the change of the session
             db.session.delete(user)
             db.session.commit()
             flash("User deleted successfully!", category = 'success')
@@ -148,52 +154,53 @@ def delete_user(user_id):
 @myapp_obj.route("/reject_user/<int:user_id>", methods=["POST"])
 def reject_user(user_id):
     if request.method == "POST":
-        if current_user.role == 'Admin':
+        if current_user.role == 'Admin': #Only admin can reject the user. Once rejected, the user will need to register again to be reconsidered
           user = User.query.get(user_id)
           if user and user.approved == False:
             db.session.delete(user)
             db.session.commit()
             flash("User rejected successfully!", category = 'success')
+          else:
+                flash("User not found or already rejected!", category ='error')
         else:
-            flash("User not found or already rejected!", category ='error')
+             flash('You do not have permission to reject users.' , category ='error')
     return redirect(url_for("adminHome"))
 
 
 @myapp_obj.route("/change_user_role/<int:user_id>", methods=["GET", "POST"])
 def change_user_role(user_id):
     if request.method == "POST":
-        if current_user.role == 'Admin':
+        if current_user.role == 'Admin': #only admin can change the role fo user
           user = User.query.get(user_id)
           if user:
             new_role = request.form.get("new_role")
             if new_role:
               if new_role != user.role:
-                  user.role = new_role
-                  db.session.commit()
+                  user.role = new_role #update the user role to new role 
+                  db.session.commit() #commit changes of the session 
                   flash("User role updated successfully!", category = 'success')
               else:
-                 flash("New role is the same as the current role",category ='error')
+                 flash("New role is the same as the current role.",category ='error')
             else:
-               flash ('No new roles are provided',category ='error')
+               flash ('No new roles are provided.',category ='error')
           else:
-            flash("User not found",category ='error')
+            flash("User not found!",category ='error')
         else:
-          flash('You do not have permission to change roles.' ,category ='error')
+          flash('You do not have permission to change user roles.' ,category ='error')
     return redirect(url_for("adminHome"))
 
 #Function to manage books
 @myapp_obj.route("/manage_books", methods = ['GET', 'POST'])
 @login_required
 def manage_books():
-    if current_user.role == 'Librarian':
-        #books = Books.query.filter_by(recipient_id = current_user.id).all()
-        books = Books.query.filter(Books.current_count >= 0).all()
+    if current_user.role == 'Librarian': #only librarian can manage books 
+        books = Books.query.filter(Books.current_count >= 0).all() #do a query on all books in the library
         user = current_user
         username = user.username      
     else:
         flash('You do not have permission to manage books.' ,category ='error')
         if current_user.role == 'Admin':
-                  return redirect(url_for('adminHome'))  # redirect to admin homepage
+            return redirect(url_for('adminHome'))  # redirect to admin homepage
                          
         elif  current_user.role == 'Student' or current_user.role == 'Faculty':
             return redirect(url_for('generalHome'))  # redirect to general homepage
@@ -207,7 +214,7 @@ def manage_books():
 @login_required
 def delete_book(books_id):
     if request.method == "POST":
-        if current_user.role == 'Librarian':
+        if current_user.role == 'Librarian': #only librarian can delete books
             book = Books.query.get(books_id)
             if book:
                 if book.max_count > 0: 
@@ -237,7 +244,7 @@ def delete_book(books_id):
 @login_required
 def add_book():
     addBookForm  = addBook()
-    if current_user.role == 'Librarian':
+    if current_user.role == 'Librarian': #only librarian can add book to the library
         if addBookForm.validate_on_submit():
             new_book = Books(title=addBookForm.title.data, author=addBookForm.author.data, genre=addBookForm.genre.data, max_count=addBookForm.max_count.data, current_count =addBookForm.max_count.data)
             db.session.add(new_book)
@@ -257,7 +264,7 @@ def add_book():
     return render_template('addBooks.html', addBookForm= addBookForm)
 
 
-#Funciton to view book for users such as Student,Faculty
+#Function to view book for users such as Student,Faculty
 @myapp_obj.route("/view_book", methods = ['GET', 'POST'])
 @login_required
 def view_book():        
