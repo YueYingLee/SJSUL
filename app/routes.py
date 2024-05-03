@@ -193,28 +193,26 @@ def change_user_role(user_id):
 @myapp_obj.route("/manage_books", methods = ['GET', 'POST'])
 @login_required
 def manage_books():
-    if current_user.role == 'Librarian': #only librarian can manage books 
+    role = current_user.role
+    if current_user.role == 'Librarian' or current_user.role == 'Admin': #only librarian and admin can manage books 
         books = Books.query.filter(Books.current_count >= 0).all() #do a query on all books in the library
         user = current_user
         username = user.username      
     else:
-        flash('You do not have permission to manage books.' ,category ='error')
-        if current_user.role == 'Admin':
-            return redirect(url_for('adminHome'))  # redirect to admin homepage
-                         
-        elif  current_user.role == 'Student' or current_user.role == 'Faculty':
+        flash('You do not have permission to manage books.' ,category ='error')                         
+        if  current_user.role == 'Student' or current_user.role == 'Faculty':
             return redirect(url_for('generalHome'))  # redirect to general homepage
         
         elif current_user.role == 'Public':
             return redirect(url_for('publicHome'))  # redirect to general homepage
-    return render_template('manageBooks.html', username = username, books=books)
+    return render_template('manageBooks.html', username = username, books=books, role = role)
 
 
 @myapp_obj.route("/delete_book/<int:books_id>", methods=["POST"])
 @login_required
 def delete_book(books_id):
     if request.method == "POST":
-        if current_user.role == 'Librarian': #only librarian can delete books
+        if current_user.role == 'Librarian' or current_user.role == 'Admin': #only librarian  or admin can delete books
             book = Books.query.get(books_id)
             if book:
                 if book.max_count > 0: 
@@ -230,10 +228,7 @@ def delete_book(books_id):
                 flash("Book not found to delete!", category ='error')
         else:
                 flash('You do not have permission to delete books.', category ='error')
-                if current_user.role == 'Admin':
-                  return redirect(url_for('adminHome'))  # redirect to admin homepage
-                         
-                elif  current_user.role == 'Student' or current_user.role == 'Faculty':
+                if  current_user.role == 'Student' or current_user.role == 'Faculty':
                     return redirect(url_for('generalHome'))  # redirect to general homepage
                 
                 elif current_user.role == 'Public':
@@ -243,25 +238,25 @@ def delete_book(books_id):
 @myapp_obj.route("/add_book", methods = ['GET', 'POST'])
 @login_required
 def add_book():
+    user = current_user
+    username = user.username
+    role = user.role
     addBookForm  = addBook()
-    if current_user.role == 'Librarian': #only librarian can add book to the library
+    if current_user.role == 'Librarian' or current_user.role == 'Admin': #only librarian or admin can add book to the library
         if addBookForm.validate_on_submit():
             new_book = Books(title=addBookForm.title.data, author=addBookForm.author.data, genre=addBookForm.genre.data, max_count=addBookForm.max_count.data, current_count =addBookForm.max_count.data)
             db.session.add(new_book)
             db.session.commit()
             flash('Added book successfully!',category = 'success')
             return redirect(url_for('manage_books'))
-    else :
-            flash('You do not have permission to add book', category ='error')
-            if current_user.role == 'Admin':
-                  return redirect(url_for('adminHome'))  # redirect to admin homepage
-                         
-            elif  current_user.role == 'Student' or current_user.role == 'Faculty':
+    else : #User with roles such as student, faculty, and public cannot add books
+            flash('You do not have permission to add book', category ='error')                    
+            if  current_user.role == 'Student' or current_user.role == 'Faculty':
                 return redirect(url_for('generalHome'))  # redirect to general homepage
             
             elif current_user.role == 'Public':
                 return redirect(url_for('publicHome'))  # redirect to general homepage
-    return render_template('addBooks.html', addBookForm= addBookForm)
+    return render_template('addBooks.html', addBookForm= addBookForm, username = username, role = role)
 
 
 #Function to view book for users such as Student,Faculty
@@ -270,9 +265,10 @@ def add_book():
 def view_book():        
     books = Books.query.filter(Books.current_count >= 0).all()
     borrowHistory = BorrowHistory.query.filter(BorrowHistory.returned == False).all()
+    role = current_user.role
     user = current_user
     username = user.username      
-    return render_template('viewBook.html', username = username, books=books, borrowHistory = borrowHistory)
+    return render_template('viewBook.html', username = username, books=books, borrowHistory = borrowHistory, role= role)
      
 
 @myapp_obj.route("/borrow_book/<int:books_id>", methods=["POST"])

@@ -24,7 +24,13 @@
         .navbar a {
             color: black; 
             text-decoration: none; 
+            margin-right: 25px;
         }
+
+        .navbar a:last-child {
+         margin-left: auto;
+        }
+
         .container {
             max-width: 800px;
             margin: 20px auto; 
@@ -92,6 +98,10 @@
 <body>  
     <div class="navbar">
         <a href="/adminHome">SJSU L</a> 
+        <a href="/adminHome">Home</a> 
+        <a href="/manage_books">View Books</a> 
+        <a href="/add_book">Add Books</a> 
+        <a href="/manage_books">Delete Books</a> 
         <a class="btn btn-dark p-2" href="/logout">Logout</a>
     </div>  
      <!-- Flash messages -->

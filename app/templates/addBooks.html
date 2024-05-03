@@ -21,6 +21,14 @@
             font-size: 24px;
             font-weight: bold;
         }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
         .navbar a {
             color: black; 
             text-decoration: none; 
@@ -31,8 +39,8 @@
          margin-left: auto;
         }
         .container {
-            max-width: 700px;
-            margin: 60px auto;
+            max-width: 800px;
+            margin: 50px auto;
             padding: 20px;
             border: 1px solid #cccccc;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -73,28 +81,49 @@
         h1, h2, p {
             text-align: center; /* Center align text */
         }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+        .alert-success {
+            color: #3c763d;
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+        }
+        .alert-error {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+        }
     </style>
 </head>
 <body> 
     <div class="navbar">
-        <a href="/librarianHome">SJSU L</a> 
-        <a href="/librarianHome">Home</a> 
-        <a href="/logout">Logout</a>
+            <ul>
+                <a href="{% if role == 'Librarian' %}/librarianHome {%else %}/adminHome{% endif %}">SJSU L</a></li>
+                <a href="{% if role == 'Librarian' %}/librarianHome {%else %}/adminHome{% endif %}">Home </a></li>
+               
+                <a href="/manage_books">View Books</a> 
+                <a href="/manage_books">Delete Books</a> 
+            </ul>
+            <a  href="/logout">Logout ({{username}})</a>
+        
     </div> 
     {% block content %} 
     <div class="container d-flex align-items-center justify-content-center">
       <div class="addBook-form-wrapper">
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <div class="alert alert-danger">
-          <ul class="list-unstyled">
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-          </ul>
-        </div>
-        {% endif %}
-        {% endwith %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+     {% if messages %}
+         {% for category, message in messages %}
+             <div class="alert alert-{{ category }}">
+                 {{ message }}
+             </div>
+         {% endfor %}
+     {% endif %}
+ {% endwith %}
           <h1 class="text-center text-primary mb-4">Add Books</h1>
           <form action="" method="POST" novalidate class="addBook-form">
             {{ addBookForm.hidden_tag() }}
