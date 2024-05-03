@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>General Homepage</title>
+    <title>Librarian Homepage</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,7 +12,6 @@
             margin: 0;
             padding: 0;
         }
-
         .navbar {
             display: flex;
             justify-content: space-between; 
@@ -31,15 +30,15 @@
         .navbar a:last-child {
          margin-left: auto;
         }
-
         .container {
             max-width: 800px;
-            margin: 50px auto;
+            margin: 20px auto; 
             padding: 20px;
             border: 1px solid #cccccc;
             border-radius: 10px;
+            background-color: #fff; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
         h1 {
             font-size: 36px;
             margin-bottom: 20px;
@@ -60,9 +59,12 @@
         }
         th {
             background-color: #f2f2f2;
-        } 
+        }
 
-        .card {
+        .submit-button {
+        margin-right: 10px;
+    }        
+     .card {
             background-color: #fff; /* White background color for cards */
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Box shadow for cards */
@@ -89,6 +91,7 @@
         .card-link:hover {
             background-color: #4169e1; /* Darker shade of blue on hover */
         } 
+
         .book-image {
             max-width: 400px;
             margin-top: 20px;
@@ -99,38 +102,26 @@
         h1, h2, p {
             text-align: center; /* Center align text */
         }
-
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border: 1px solid transparent;
-            border-radius: 4px;
-        }
-        .alert-success {
-            color: #3c763d;
-            background-color: #dff0d8;
-            border-color: #d6e9c6;
-        }
-        .alert-error {
-            color: #a94442;
-            background-color: #f2dede;
-            border-color: #ebccd1;
-        }
     </style>
 </head>
-<body>  <div class="navbar">
-    <a href="/generalHome">SJSU L</a> 
-    <a class="btn btn-dark p-2" href="/logout">Logout</a>
-</div>  <img src="{{ url_for('static', filename='/book.jpg') }}" alt="Book Image" class="book-image">
-<h1>Hello {{username}}!</h1>
+<body>
+    <div class="navbar">
+        <a href="/librarianHome">SJSU L</a> 
+        <a href="/librarianHome">Home</a>  
+        <a class="btn btn-dark p-2" href="/logout">Logout</a>
+    </div> 
+     <img src="{{ url_for('static', filename='/book.jpg') }}" alt="Book Image" style = "width:50%; height:50%;" class="book-image">
+    <h1>Hello {{username}}!</h1>
     <p>Your current role:  {{role}} <p></p>
+  
         <div class="card">
-            <h2 class="card-title">Your accesses</h2>
-            <a href="/view_book" class="card-link">View Books</a> 
+            <h2 class="card-title">Manage Books</h2>
+            <a href="/manage_books" class="card-link">View Books</a> 
             <br>
-            <a href="/view_book" class="card-link">Borrow Books</a> 
+            <a href="/add_book" class="card-link">Add Books</a> 
             <br>
-            <a href="/view_book" class="card-link">Check your current borrows</a> 
-            <br>   
+            <a href="/manage_books" class="card-link">Delete Books</a>
+        </div>
+    </div>
 </body>
 </html>

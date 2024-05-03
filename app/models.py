@@ -14,10 +14,9 @@ class User(db.Model, UserMixin):
     role = db.Column(db.String, nullable=False, default='guest')
     registered_role = db.Column(db.String, nullable=False)
     approved = db.Column(db.Boolean, nullable=False, default=False)  # Approval status for admin
-    #roles = db.relationship('Role',  backref='user', lazy = 'dynamic')
-    #roles = db.relationship('Role', secondary=roles_users, backref='roled')
-    #roles = db.relationship('Role', secondary='user_roles', backref='users')
-    profile = db.relationship('Profile', backref = 'user', lazy = 'dynamic')   
+    
+    borrowHistory= db.relationship('BorrowHistory', backref = 'user', lazy = 'dynamic')
+    #profile = db.relationship('Profile', backref = 'user', lazy = 'dynamic')   
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -32,35 +31,26 @@ class User(db.Model, UserMixin):
     def __repr__(self): #for debugging process
         return f'<user {self.id}: {self.username}>'
     
-'''#class Role(db.Model, RoleMixin):
-class Role(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True) #This represents the name of role 
-
-user_roles = db.Table('user_roles',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('role_id', db.Integer, db.ForeignKey('role.id'), primary_key=True)
-)
-'''
-
-
-'''class UserRoles (db.Model):
-    db.Column('id', db.Integer, primary_key=True)
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    db.Column('role_id', db.Integer, db.ForeignKey('role.id'), primary_key=True)
-'''
 
 class Books(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(500), nullable=False)
+    author = db.Column(db.String(500), nullable = False)
     genre = db.Column(db.String(500), nullable=False)
-    count = db.Column(db.Integer, nullable=False)
-
-class Profile(db.Model):
+    max_count = db.Column(db.Integer, nullable=False)
+    current_count=db.Column(db.Integer, nullable= False)
+    borrowHistory= db.relationship('BorrowHistory', backref = 'books', lazy = 'dynamic')
+    def __repr__(self): #for debugging process
+        return f'<books {self.id}: {self.title}>'
+    
+class BorrowHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    role = db.Column(db.String(200))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
+    book_id = db.Column(db.Integer, db.ForeignKey('books.id'))
+    borrow_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    return_date = db.Column(db.DateTime)
+    returned= db.Column(db.Boolean, nullable=False, default=False)   
+ 
 
 @login.user_loader
 def load_user(id):

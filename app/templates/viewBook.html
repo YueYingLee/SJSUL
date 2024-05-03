@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>This is librarian Tables</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            display: flex;
+            align-items: center;
+            background-color: #87cefa; 
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .navbar a {
+            color: black; 
+            text-decoration: none; 
+            margin-right: 25px;
+        }
+
+        .navbar a:last-child {
+         margin-left: auto;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #cccccc;
+            border-radius: 10px;
+        }  
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        } 
+        h1, h2, p {
+            text-align: center; /* Center align text */
+        }
+
+        .submit-button {
+        margin-right: 10px;
+    }        
+       
+    .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+        .alert-success {
+            color: #3c763d;
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+        }
+        .alert-error {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+        }
+    </style>
+</head>
+<body> 
+    <div class="navbar">
+        <a href="/generalHome">SJSU L</a> 
+        <a href="/generalHome">Home</a>  
+        <a  href="/logout">Logout ({{username}})</a>
+    </div> 
+    <div class="container">  
+        {% with messages = get_flashed_messages(with_categories=true) %}
+     {% if messages %}
+         {% for category, message in messages %}
+             <div class="alert alert-{{ category }}">
+                 {{ message }}
+             </div>
+         {% endfor %}
+     {% endif %}
+ {% endwith %}                
+        <h1>Books List</h1>
+        {%if books %} <!--display books informatin if there are books-->
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Book Title</th>
+                    <th>Book Author</th>
+                    <th>Book Genre</th>
+                    <th>Availability</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                    {% for book in books %}
+                    <tr>
+                        <td>{{ book.id }}</td>
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author }}</td>
+                        <td>{{ book.genre }}</td>
+                        <td>
+
+                            {{ book.current_count}}</td>
+                        <td> 
+                            <!-- Student can choose to borrow book-->
+                            <form action="{{ url_for('borrow_book', books_id=book.id) }}" method="POST" style="display: inline;">
+                                <button type="submit">Borrow Book</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>  
+        {% else %} 
+        <table>
+            <thead>
+                <tr>
+                </tr>
+            </thead>
+            <tbody> 
+                
+           
+        {% endif %}
+         </table>
+        </div>
+        <div class="container">   
+        <h1>Your current borrow</h1>
+         <!--display borrow book history if there are any-->
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Borrowed Book Title</th>
+                    <th>Borrowed Date</th>
+                    <th>Actions</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                {% for borrowed in borrowHistory %}
+                    {% if borrowed.returned == False %}
+                        {% for book in books %}
+                            {% if book.id == borrowed.book_id and borrowed.user_id == current_user.id %}
+                            <tr>
+                                <td>{{ borrowed.id }}</td>
+                                <td>{{ book.title}}</td>
+                                <td>{{ borrowed.borrow_date.strftime("%b %d, %Y %H:%M:%S") }}</td>
+                                <td>
+                                    <!-- Student can choose to return book-->
+                                    <form action="{{ url_for('return_book', books_id=book.id) }}" method="POST" style="display: inline;">
+                                        <button type="submit">Return Book</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                        {%else%}
+                        <h3> No books borrowed for {{username}}</h3></tr>
+                    {% endif %}
+                   
+                {% endfor %}            
+</tbody>
+
+        </table>
+        
+    </div>
+</body>
+</html>

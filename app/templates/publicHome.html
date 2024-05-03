@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>General Homepage</title>
+    
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #ffffff;
+            background-color: #ffffff; 
             color: #000000;
             margin: 0;
             padding: 0;
         }
-
         .navbar {
             display: flex;
             justify-content: space-between; 
@@ -25,21 +24,16 @@
         .navbar a {
             color: black; 
             text-decoration: none; 
-            margin-right: 25px;
         }
-
-        .navbar a:last-child {
-         margin-left: auto;
-        }
-
         .container {
             max-width: 800px;
-            margin: 50px auto;
+            margin: 20px auto; 
             padding: 20px;
             border: 1px solid #cccccc;
             border-radius: 10px;
+            background-color: #fff; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
         }
-
         h1 {
             font-size: 36px;
             margin-bottom: 20px;
@@ -60,35 +54,7 @@
         }
         th {
             background-color: #f2f2f2;
-        } 
-
-        .card {
-            background-color: #fff; /* White background color for cards */
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Box shadow for cards */
-            padding: 20px;
-             
-            width: 300px;
-            text-align: center;
-            margin: 0 auto; 
-            font-weight: bold; /* Bold font weight for cards */
         }
-        .card-title {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        .card-link {
-            display: block;
-            text-decoration: none;
-            background-color: #6495ed; /* Dark blue color for card links */
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-        .card-link:hover {
-            background-color: #4169e1; /* Darker shade of blue on hover */
-        } 
         .book-image {
             max-width: 400px;
             margin-top: 20px;
@@ -118,19 +84,61 @@
         }
     </style>
 </head>
-<body>  <div class="navbar">
-    <a href="/generalHome">SJSU L</a> 
-    <a class="btn btn-dark p-2" href="/logout">Logout</a>
-</div>  <img src="{{ url_for('static', filename='/book.jpg') }}" alt="Book Image" class="book-image">
-<h1>Hello {{username}}!</h1>
-    <p>Your current role:  {{role}} <p></p>
-        <div class="card">
-            <h2 class="card-title">Your accesses</h2>
-            <a href="/view_book" class="card-link">View Books</a> 
-            <br>
-            <a href="/view_book" class="card-link">Borrow Books</a> 
-            <br>
-            <a href="/view_book" class="card-link">Check your current borrows</a> 
-            <br>   
+<body>
+    <div class="navbar">
+        <a href="/publicHome">SJSU L</a> 
+        <a class="btn btn-dark p-2" href="/logout">Logout</a>
+    </div> 
+    
+    <img src="{{ url_for('static', filename='/book.jpg') }}" alt="Book Image" class="book-image">
+    <h1>Hello {{username}}!</h1>
+        <p>Your current role:  {{role}} <p></p>
+        <h2>Books Available in SJSUL</h2>
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+        {%if books %} <!--display books information if there are books-->
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Book Title</th>
+                    <th>Book Author</th>
+                    <th>Book Genre</th>
+                    <th>Availability</th>
+                     
+                </tr>
+            </thead>
+            <tbody>
+                    {% for book in books %}
+                    <tr>
+                        <td>{{ book.id }}</td>
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author }}</td>
+                        <td>{{ book.genre }}</td>
+                        <td>{{ book.current_count}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %} 
+        <table>
+            <thead>
+                <tr>
+                   
+                </tr>
+            </thead>
+            <tbody> 
+                <h2>No books available.</h2></tr>
+           
+        {% endif %}
+    </div>
 </body>
 </html>
