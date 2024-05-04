@@ -82,6 +82,10 @@
             background-color: #f2dede;
             border-color: #ebccd1;
         }
+
+        .search-field {
+    width: 225px; /* Adjust the width as needed */
+}
     </style>
 </head>
 <body>
@@ -104,6 +108,13 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
+    <form action="{{ url_for('publicHome') }}" method="post" style="display: inline" class="form-inline">
+        <input type="text" name="search" class="form-control mr-2 search-field" placeholder="Search by book title, author or genre">
+        <button type="submit" class="btn btn-primary">Search</button>  
+    
+    <form action="{{ url_for('publicHome') }}" method="post" style="display: inline" class="form-inline">
+        <button type="submit" class="btn btn-primary">Show all books</button> 
+        </form>   
         {%if books %} <!--display books information if there are books-->
         <table>
             <thead>

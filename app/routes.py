@@ -91,14 +91,18 @@ def generalHome():
     return render_template('generalHome.html', username = username,  role=role)
 
 
-@myapp_obj.route("/publicHome")
+@myapp_obj.route("/publicHome", methods=["GET", "POST"])
 @login_required
 def publicHome():
     user = current_user
     username = user.username
     role = user.role
-    books = Books.query.filter(Books.current_count >= 0).all() #do query on books since public can only see what books available in the library
-    return render_template('publicHome.html', username = username, books = books, role=role)
+    search_book = request.form.get('search')
+    if search_book:
+            books= Books.query.filter(or_(Books.title.ilike(f'%{search_book}%'), Books.author.ilike(f'%{search_book}%'), Books.genre.ilike(f'%{search_book}%'))).all()
+    else:
+            books =  Books.query.filter(Books.current_count >= 0).all() #do a query on all books in the library
+    return render_template('publicHome.html', username = username, books = books, role=role, search_book = search_book)
 
 @myapp_obj.route("/librarianHome")
 @login_required
