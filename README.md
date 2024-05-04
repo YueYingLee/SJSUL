@@ -32,8 +32,7 @@ This is a fictitious library, a simple web-based system which perform primary us
 - Search books
 
 ## Instructions to run the project 
-1. Clone this project in your Linux terminal
- `git clone https://github.com/YueYingLee/SJSUL.git`
+1. Clone this project in your Linux terminal `git clone https://github.com/YueYingLee/SJSUL.git`
 2. Navigate to the folder
   `cd SJSUL`
 3.  Create a virtual environment named as venv.
