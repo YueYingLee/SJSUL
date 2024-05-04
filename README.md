@@ -9,7 +9,7 @@ This is a fictitious library, a simple web-based system which perform primary us
 - Approve and reject user 
 - Change user's role 
 - Delete user  
-- View all users
+- View all users and search users
 - View all books and search books
 - Add and delete books 
 
